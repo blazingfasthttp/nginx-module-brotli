@@ -3,7 +3,8 @@
 Epoch: %{epoch}
 %endif
 
-%define main_version        1.21.4.1
+%define nginx_version       1.21.4
+%define main_version        %{nginx_version}.1
 %define main_release        %{epoch}%{dist}.ngx
 %define module_version      1.0.0rc
 %define brotli_version      1.0.9
@@ -44,6 +45,10 @@ ngx_brotli is a set of two nginx modules:
 
 %define bdir %{_builddir}/openresty-%{main_version}
 %define NGINX_BUILDSTRING $(openresty -V 2>&1 | grep 'configure arguments' | sed "s#configure arguments:##g")
+
+%if (0%{?rhel} == 8)
+%global debug_package %{nil}
+%endif
 
 %prep
 %setup -q -n "openresty-%{main_version}"
@@ -87,7 +92,7 @@ cd %{bdir}
    --with-luajit-xcflags='-DLUAJIT_NUMMODE=2 -DLUAJIT_ENABLE_LUA52COMPAT' \
    --add-dynamic-module=%{_builddir}/ngx_brotli-%{module_version} \
    -j`nproc`
-cd %{_builddir}/openresty-%{main_version}/build/nginx-* && make modules -j`nproc`
+cd %{_builddir}/openresty-%{main_version}/build/nginx-%{nginx_version} && make modules -j`nproc`
 
 %install
 mkdir -p %{buildroot}%{orprefix}/nginx/modules

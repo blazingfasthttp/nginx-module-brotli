@@ -1,0 +1,40 @@
+name: compile-centos-7
+on: [push]
+jobs:
+  compile-centos-7:
+    name: Compile RPM for CentOS 7
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
+      - name: Run the build process with Docker
+        uses: addnab/docker-run-action@v3
+        with:
+          image: manoaratefy/openresty-compile:centos-7
+          options: -v ${{ github.workspace }}/SPECS:/root/rpmbuild/SPECS -v ${{ github.workspace }}/RPMS:/root/rpmbuild/RPMS
+          shell: bash
+          run: |
+            cd /root/rpmbuild/SPECS
+            spectool -g -R *.spec
+            rpmbuild -ba *.spec
+
+      - name: Test with Openresty
+        uses: addnab/docker-run-action@v3
+        with:
+          image: openresty/openresty:centos7
+          options: -v ${{ github.workspace }}/testing.conf:/usr/local/openresty/conf/nginx.conf
+          shell: bash
+          run: |
+            openresty -t
+
+      - name: Upload package to packagecloud.io
+        uses: addnab/docker-run-action@v3
+        with:
+          image: alpine/curl
+          options: -v ${{ github.workspace }}/RPMS/x86_64:/rpms
+          run: |
+            for file in `find /rpms/*.rpm`; do
+              curl -X POST https://${{ secrets.PACKAGECLOUD_TOKEN }}:@packagecloud.io/api/v1/repos/manoaratefy/openresty-extras/packages.json -F "package[distro_version_id]=140" -F "package[package_file]=@$file"
+            done

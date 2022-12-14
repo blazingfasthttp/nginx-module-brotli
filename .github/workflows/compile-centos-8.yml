@@ -1,8 +1,8 @@
-name: compile
+name: compile-centos-8
 on: [push]
 jobs:
-  compile:
-    name: Compile RPM for CentOS 7
+  compile-centos-8:
+    name: Compile RPM for CentOS 8
     runs-on: ubuntu-latest
 
     steps:
@@ -12,7 +12,7 @@ jobs:
       - name: Run the build process with Docker
         uses: addnab/docker-run-action@v3
         with:
-          image: manoaratefy/openresty-compile:centos-7
+          image: manoaratefy/openresty-compile:centos-8
           options: -v ${{ github.workspace }}/SPECS:/root/rpmbuild/SPECS -v ${{ github.workspace }}/RPMS:/root/rpmbuild/RPMS
           shell: bash
           run: |
@@ -23,7 +23,7 @@ jobs:
       - name: Test with Openresty
         uses: addnab/docker-run-action@v3
         with:
-          image: openresty/openresty:centos7
+          image: openresty/openresty:centos
           options: -v ${{ github.workspace }}/testing.conf:/usr/local/openresty/conf/nginx.conf
           shell: bash
           run: |
