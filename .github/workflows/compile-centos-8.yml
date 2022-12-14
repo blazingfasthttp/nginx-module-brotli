@@ -36,5 +36,5 @@ jobs:
           options: -v ${{ github.workspace }}/RPMS/x86_64:/rpms
           run: |
             for file in `find /rpms/*.rpm`; do
-              curl -X POST https://${{ secrets.PACKAGECLOUD_TOKEN }}:@packagecloud.io/api/v1/repos/manoaratefy/openresty-extras/packages.json -F "package[distro_version_id]=140" -F "package[package_file]=@$file"
+              curl -X POST https://${{ secrets.PACKAGECLOUD_TOKEN }}:@packagecloud.io/api/v1/repos/manoaratefy/openresty-extras/packages.json -F "package[distro_version_id]=205" -F "package[package_file]=@$file"
             done
