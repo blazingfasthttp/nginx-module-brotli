@@ -2,6 +2,32 @@
 RPM packaging for [ngx_brotli](https://github.com/google/ngx_brotli) intendeed to be binary-compatible
 with official OpenResty RPM packages.
 
+## Installation
+Install `openresty-extras` repository:
+```
+curl -s https://packagecloud.io/install/repositories/manoaratefy/openresty-extras/script.rpm.sh | sudo bash
+```
+Install the `openresty-module-brotli` package:
+```
+dnf -y install openresty-module-brotli
+```
+## Configuration
+To use the module, you have to include the dynamic extensions by adding them into `/usr/local/openresty/nginx/conf/nginx.conf` (usually on the first lines):
+```
+load_module modules/ngx_http_brotli_filter_module.so;
+load_module modules/ngx_http_brotli_static_module.so;
+```
+Then, you can configure the module as you want, such as:
+```
+brotli on;
+brotli_comp_level 6;
+brotli_types application/atom+xml application/javascript application/json application/rss+xml
+    application/vnd.ms-fontobject application/x-font-opentype application/x-font-truetype
+    application/x-font-ttf application/x-javascript application/xhtml+xml application/xml
+    font/eot font/opentype font/otf font/truetype image/svg+xml image/vnd.microsoft.icon
+    image/x-icon image/x-win-bitmap text/css text/javascript text/plain text/xml;
+```
+See [the module's documentation](https://github.com/google/ngx_brotli#ngx_brotli) for more details.
 ## License
 
     Copyright (C) 2002-2015 Igor Sysoev
